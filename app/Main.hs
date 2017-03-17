@@ -6,6 +6,6 @@ import           System.Console.CmdArgs
 main :: IO ()
 main = do
   config <- cmdArgs argConfig
-  config <- fillFromEnv config
+  config <- defaultFromEnv config
 
   print config
