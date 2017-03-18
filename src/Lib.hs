@@ -1,13 +1,18 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings  #-}
 
-module Lib (argConfig, defaultFromEnv, lfiles, directory) where
+module Lib
+    ( argConfig
+    , defaultFromEnv
+    , lfiles
+    , access_key
+    , secret_access_key
+    , bucket_name
+    , directory
+    ) where
 
-import qualified Aws
-import qualified Aws.S3                 as S3
 import           Data.Foldable          (toList)
 import           Data.Text              (replace)
-import           Network.HTTP.Conduit   (responseBody, withManager)
 import           System.Console.CmdArgs
 import           System.Directory.Tree
 import           System.Posix.Env       (getEnvDefault)

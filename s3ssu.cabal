@@ -17,10 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
   build-depends:       base >= 4.7 && < 5
-                     , aws
                      , cmdargs
                      , unix
-                     , http-conduit
                      , directory-tree
                      , text
   default-language:    Haskell2010
@@ -32,6 +30,12 @@ executable s3ssu
   build-depends:       base
                      , s3ssu
                      , cmdargs
+                     , aws
+                     , bytestring
+                     , http-conduit
+                     , unix
+                     , text
+                     , resourcet
   default-language:    Haskell2010
 
 test-suite s3ssu-test
