@@ -9,12 +9,15 @@ module Lib
     , secret_access_key
     , bucket_name
     , directory
+    , project_name
+    , fileContentType
     ) where
 
 import           Data.Foldable          (toList)
 import           Data.Text              (replace)
 import           System.Console.CmdArgs
 import           System.Directory.Tree
+import           System.FilePath.Posix  (takeExtension)
 import           System.Posix.Env       (getEnvDefault)
 
 {-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
@@ -75,3 +78,13 @@ defaultFromEnv config = do
 
 lfiles :: FilePath -> IO [FilePath]
 lfiles dirpath = toList . dirTree <$> readDirectoryWith return dirpath
+
+
+fileContentType :: FilePath -> String
+fileContentType filePath = case takeExtension filePath of
+    ".png"  -> "image/png"
+    ".html" -> "text/html"
+    ".js"   -> "application/javascript"
+    ".css"  -> "text/css"
+    ".svg"  -> "image/svg+xml"
+    _       -> "text/plain"
