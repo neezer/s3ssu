@@ -1,13 +1,19 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# OPTIONS_GHC -fno-cse #-}
+{-# LANGUAGE OverloadedStrings  #-}
 
-module Lib
-    ( argConfig
-    , defaultFromEnv
-    ) where
+module Lib (argConfig, defaultFromEnv, lfiles) where
 
+import qualified Aws
+import qualified Aws.S3                 as S3
+import           Data.Foldable          (toList)
+import           Data.Text              (replace)
+import           Network.HTTP.Conduit   (responseBody, withManager)
 import           System.Console.CmdArgs
+import           System.Directory.Tree
 import           System.Posix.Env       (getEnvDefault)
+
+{-# ANN module ("HLint: ignore Use camelCase" :: String) #-}
+
 
 data Config = Config { access_key        :: String
                      , secret_access_key :: String
@@ -16,6 +22,7 @@ data Config = Config { access_key        :: String
                      , directory         :: FilePath
                      }
                      deriving (Show, Data, Typeable)
+
 
 argConfig :: Config
 argConfig = Config
@@ -43,9 +50,10 @@ argConfig = Config
         "Example use:"
     ]
 
+
 defaultTo :: String -> String -> String
-defaultTo fallback ""        = fallback
-defaultTo fallback preferred = preferred
+defaultTo fallback "" = fallback
+defaultTo _ preferred = preferred
 
 
 defaultFromEnv :: Config -> IO Config
@@ -58,3 +66,7 @@ defaultFromEnv config = do
                   , secret_access_key = defaultTo envSecretAccessKey (secret_access_key config)
                   , bucket_name = defaultTo envBucketName (bucket_name config)
                   }
+
+
+lfiles :: FilePath -> IO [FilePath]
+lfiles dirpath = toList . dirTree <$> readDirectoryWith return dirpath
