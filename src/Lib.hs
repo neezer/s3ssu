@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings  #-}
 
-module Lib (argConfig, defaultFromEnv, lfiles) where
+module Lib (argConfig, defaultFromEnv, lfiles, directory) where
 
 import qualified Aws
 import qualified Aws.S3                 as S3
