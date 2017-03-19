@@ -1,16 +1,11 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE OverloadedStrings  #-}
 
 module Lib
     ( argConfig
     , defaultFromEnv
     , lfiles
-    , access_key
-    , secret_access_key
-    , bucket_name
-    , directory
-    , project_name
     , fileContentType
+    , Config (..)
     ) where
 
 import           Data.Foldable          (toList)
@@ -70,9 +65,11 @@ defaultFromEnv config = do
     envSecretAccessKey <- getEnvDefault "S3_SECRET_ACCESS_KEY" ""
     envBucketName <- getEnvDefault "DOCS_BUCKET_NAME" ""
 
-    return config { access_key = defaultTo envAccessKey (access_key config)
-                  , secret_access_key = defaultTo envSecretAccessKey (secret_access_key config)
-                  , bucket_name = defaultTo envBucketName (bucket_name config)
+    let Config access_key secret_access_key bucket_name _ _ = config
+
+    return config { access_key = defaultTo envAccessKey access_key
+                  , secret_access_key = defaultTo envSecretAccessKey secret_access_key
+                  , bucket_name = defaultTo envBucketName bucket_name
                   }
 
 
