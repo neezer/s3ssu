@@ -29,8 +29,9 @@ main = do
     manager <- newManager tlsManagerSettings
 
     creds <- Aws.makeCredentials (pack access_key) (pack secret_access_key)
+    verbosity <- getVerbosity
 
-    let cfg = Aws.Configuration Aws.Timestamp creds (Aws.defaultLog Aws.Debug)
+    let cfg = Aws.Configuration Aws.Timestamp creds (Aws.defaultLog $ logLevel verbosity)
     let s3cfg = S3.s3 Aws.HTTP (pack "s3-us-west-2.amazonaws.com") False
 
     forM_ filePaths $ uploadFilePath config cfg s3cfg manager
@@ -45,12 +46,10 @@ uploadFilePath config cfg s3cfg manager filePath = do
     let body = RequestBodyStream (fromInteger size) streamer
     let name = s3FilePath (T.pack project_name) (T.pack directory) (T.pack filePath)
 
-    rsp <- runResourceT $ Aws.pureAws cfg s3cfg manager $
+    runResourceT $ Aws.pureAws cfg s3cfg manager $
         (S3.putObject (T.pack bucket_name) name body)
             { S3.poContentType = Just $ pack $ fileContentType filePath
             }
-
-    liftIO $ print rsp
 
 
 projectPath :: Text -> Text -> Text
@@ -60,3 +59,9 @@ projectPath directory = T.replace directory T.empty
 s3FilePath :: Text -> Text -> Text -> Text
 s3FilePath projectName directory filePath =
     T.append projectName $ projectPath directory filePath
+
+
+logLevel :: Verbosity -> Aws.LogLevel
+logLevel Quiet  = Aws.Error
+logLevel Normal = Aws.Info
+logLevel Loud   = Aws.Debug
