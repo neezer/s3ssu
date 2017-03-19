@@ -31,16 +31,17 @@ argConfig :: Config
 argConfig = Config
     { access_key = def &=
         typ "S3_ACCESS_KEY" &=
-        help "Set the AWS access key"
+        help "Set the AWS access key" &=
+        groupname "Flags"
     , secret_access_key = def &=
         typ "S3_SECRET_ACCESS_KEY" &=
         help "Set the AWS secret access key"
     , bucket_name = def &=
         typ "DOCS_BUCKET_NAME" &=
-        help "Set the name of the S3 bucket to upload to"
+        help "Set the name of the S3 bucket"
     , project_name = def &=
         typ "PROJECT_NAME" &=
-        help "Set the name of your project, which will be the folder name on S3"
+        help "Set the name of your project\n\n(should be equivalent to the name of your Github repo)"
     , directory = def &=
         argPos 0 &=
         typ "DIRECTORY_TO_UPLOAD"
@@ -49,9 +50,9 @@ argConfig = Config
     verbosity &=
     help "Upload a folder to an S3 bucket as a static site" &=
     summary "s3ssu v0.0.0, (C) Kofile" &=
-    details [
-        "Example use:"
-    ]
+    details [ ""
+            , "Example use:"
+            ]
 
 
 defaultTo :: String -> String -> String
