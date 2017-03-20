@@ -1,0 +1,28 @@
+# https://www.fpcomplete.com/blog/2016/10/static-compilation-with-stack
+
+# https://github.com/mitchty/alpine-linux-ghc-bootstrap
+FROM mitchty/alpine-ghc:large
+
+RUN apk update
+RUN apk add alpine-sdk git ca-certificates gmp-dev zlib-dev
+
+# FIX https://bugs.launchpad.net/ubuntu/+source/gcc-4.4/+bug/640734
+WORKDIR /usr/lib/gcc/x86_64-alpine-linux-musl/6.2.1/
+RUN cp crtbeginT.o crtbeginT.o.orig
+RUN cp crtbeginS.o crtbeginT.o
+
+# COMPILE s3ssu
+ADD ./ /usr/src
+WORKDIR /usr/src
+RUN stack --local-bin-path /sbin install --test --ghc-options '-optl-static -fPIC -optc-Os' --system-ghc
+
+# COMPRESS WITH UPX
+ADD https://github.com/lalyos/docker-upx/releases/download/v3.91/upx /usr/local/bin/upx
+RUN chmod 755 /usr/local/bin/upx
+RUN upx --best --ultra-brute /sbin/s3ssu
+
+# SHOW INFORMATION ABOUT s3ssu
+RUN ldd /sbin/s3ssu || true
+RUN du -hs /sbin/s3ssu
+
+
